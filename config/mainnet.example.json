@@ -1,0 +1,48 @@
+{
+  "network": "mainnet-beta",
+  "rpcUrl": "https://api.mainnet-beta.solana.com",
+  
+  "memecoin": {
+    "mint": "YOUR_TOKEN_MINT_ADDRESS",
+    "decimals": 9,
+    "symbol": "MEME",
+    "name": "Your Memecoin"
+  },
+  
+  "oracle": {
+    "type": "switchboard",
+    "feedAddress": "YOUR_SWITCHBOARD_FEED_ADDRESS",
+    "poolAddress": "YOUR_RAYDIUM_OR_ORCA_POOL_ADDRESS",
+    "maxStalenessSeconds": 60,
+    "confidenceFilterBps": 1000
+  },
+  
+  "programs": {
+    "percolator": "TO_BE_DEPLOYED",
+    "matcher": "TO_BE_DEPLOYED"
+  },
+  
+  "market": {
+    "slabAddress": "TO_BE_CREATED",
+    "vaultAddress": "TO_BE_CREATED",
+    
+    "initialLpCollateral": "1000000000000",
+    "initialInsurance": "500000000000",
+    
+    "tradingFeeBps": 10,
+    "maintenanceMarginBps": 500,
+    "initialMarginBps": 1000,
+    "liquidationFeeBps": 100,
+    "liquidationBufferBps": 50,
+    
+    "maxAccounts": 1024,
+    "newAccountFee": "1000000",
+    
+    "inverted": false
+  },
+  
+  "keeper": {
+    "intervalMs": 5000,
+    "maxRetries": 3
+  }
+}

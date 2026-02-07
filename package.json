@@ -1,0 +1,53 @@
+{
+  "name": "burnloop",
+  "version": "0.1.0",
+  "description": "Deflationary perpetuals exchange - memecoin collateral with soft-burn mechanics",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts",
+    "deploy:programs": "tsx scripts/deploy-programs.ts",
+    "init:market": "tsx scripts/init-market.ts",
+    "fund:lp": "tsx scripts/fund-lp.ts",
+    "fund:insurance": "tsx scripts/fund-insurance.ts",
+    "keeper": "tsx scripts/keeper-bot.ts",
+    "renounce:admin": "tsx scripts/renounce-admin.ts",
+    "status": "tsx scripts/market-status.ts",
+    "monitor:burn": "tsx scripts/monitor-burn.ts",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.29.0",
+    "@solana/spl-token": "^0.4.0",
+    "@solana/web3.js": "^1.91.0",
+    "@switchboard-xyz/on-demand": "^1.2.0",
+    "bn.js": "^5.2.1",
+    "chalk": "^5.3.0",
+    "commander": "^12.0.0",
+    "dotenv": "^16.4.0"
+  },
+  "devDependencies": {
+    "@types/bn.js": "^5.1.5",
+    "@types/node": "^20.11.0",
+    "tsup": "^8.0.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.0",
+    "vitest": "^1.2.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Sugusdaddy/burnloop.git"
+  },
+  "keywords": [
+    "solana",
+    "perpetuals",
+    "defi",
+    "memecoin",
+    "deflationary"
+  ],
+  "author": "BurnLoop Contributors",
+  "license": "Apache-2.0"
+}
