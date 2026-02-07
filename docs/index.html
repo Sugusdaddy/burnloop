@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BurnLoop - Deflationary Perpetuals</title>
+    <meta name="description" content="Trade perpetuals using memecoins as collateral. Every trade burns supply forever.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔥</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-animation">
+        <div class="fire-particle"></div>
+        <div class="fire-particle"></div>
+        <div class="fire-particle"></div>
+        <div class="fire-particle"></div>
+        <div class="fire-particle"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo">
+                <span class="logo-icon">🔥</span>
+                <span class="logo-text">BurnLoop</span>
+            </a>
+            <div class="nav-links">
+                <a href="#how-it-works">How It Works</a>
+                <a href="#tokenomics">Tokenomics</a>
+                <a href="#roadmap">Roadmap</a>
+                <a href="https://github.com/Sugusdaddy/burnloop" target="_blank">GitHub</a>
+            </div>
+            <a href="https://pump.fun/coin/968zAsb2uRZhZAqpAJAt3khAEuK2KfZFMo9cAqKjpump" target="_blank" class="btn btn-primary">
+                Buy $BurnLoop
+            </a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="badge">🔥 Built on Solana</div>
+            <h1>Every Trade <span class="gradient-text">Burns Forever</span></h1>
+            <p class="hero-subtitle">
+                The first deflationary perpetuals exchange. Trade leveraged positions using $BurnLoop as collateral. 
+                Trading fees are <strong>permanently locked</strong> — reducing supply with every trade.
+            </p>
+            <div class="hero-buttons">
+                <a href="https://pump.fun/coin/968zAsb2uRZhZAqpAJAt3khAEuK2KfZFMo9cAqKjpump" target="_blank" class="btn btn-large btn-primary">
+                    🚀 Buy on Pump.fun
+                </a>
+                <a href="https://dexscreener.com/solana/AhJFcrmvk5thQvyCQut6YrPQDpvAXRo4oZUkH6y46nyv" target="_blank" class="btn btn-large btn-secondary">
+                    📊 View Chart
+                </a>
+            </div>
+            <div class="hero-stats">
+                <div class="stat">
+                    <span class="stat-value" id="price">$0.00005</span>
+                    <span class="stat-label">Price</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value" id="burned">0</span>
+                    <span class="stat-label">Tokens Burned</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value" id="liquidity">$18K+</span>
+                    <span class="stat-label">Liquidity</span>
+                </div>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="loop-animation">
+                <div class="loop-ring ring-1"></div>
+                <div class="loop-ring ring-2"></div>
+                <div class="loop-ring ring-3"></div>
+                <div class="loop-center">🔥</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section id="how-it-works" class="section">
+        <div class="container">
+            <h2 class="section-title">How The <span class="gradient-text">Burn Loop</span> Works</h2>
+            <p class="section-subtitle">Inspired by Toly's vision for sustainable memecoin economics</p>
+            
+            <div class="flow-diagram">
+                <div class="flow-step">
+                    <div class="step-icon">💰</div>
+                    <h3>Deposit</h3>
+                    <p>Use $BurnLoop as collateral to trade perpetual futures</p>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step">
+                    <div class="step-icon">📈</div>
+                    <h3>Trade</h3>
+                    <p>Go long or short with up to 10x leverage</p>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step">
+                    <div class="step-icon">🔥</div>
+                    <h3>Burn</h3>
+                    <p>0.1% fee goes to insurance fund — locked FOREVER</p>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step highlight">
+                    <div class="step-icon">♾️</div>
+                    <h3>Loop</h3>
+                    <p>More trading = more burn = decreasing supply</p>
+                </div>
+            </div>
+
+            <div class="info-cards">
+                <div class="info-card">
+                    <h4>🔒 No Admin</h4>
+                    <p>Once launched, the market is <strong>immutable</strong>. No one can change parameters or withdraw from insurance.</p>
+                </div>
+                <div class="info-card">
+                    <h4>🔥 Permanent Burn</h4>
+                    <p>Trading fees go to the insurance fund and are <strong>locked forever</strong>. They can never be withdrawn.</p>
+                </div>
+                <div class="info-card">
+                    <h4>📉 Deflationary</h4>
+                    <p>Every trade reduces circulating supply. The more people trade, the more tokens get burned.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Burn Calculator -->
+    <section class="section section-dark">
+        <div class="container">
+            <h2 class="section-title">🔥 Burn Projections</h2>
+            <p class="section-subtitle">See how trading volume impacts token supply</p>
+            
+            <div class="burn-table">
+                <div class="table-header">
+                    <span>Daily Volume</span>
+                    <span>Daily Burn</span>
+                    <span>Monthly Burn</span>
+                    <span>Yearly Burn</span>
+                </div>
+                <div class="table-row">
+                    <span>$10,000</span>
+                    <span class="burn-value">~200K tokens</span>
+                    <span class="burn-value">~6M tokens</span>
+                    <span class="burn-value">~73M tokens</span>
+                </div>
+                <div class="table-row">
+                    <span>$100,000</span>
+                    <span class="burn-value">~2M tokens</span>
+                    <span class="burn-value">~60M tokens</span>
+                    <span class="burn-value">~730M tokens</span>
+                </div>
+                <div class="table-row highlight">
+                    <span>$1,000,000</span>
+                    <span class="burn-value">~20M tokens</span>
+                    <span class="burn-value">~600M tokens</span>
+                    <span class="burn-value">~7.3B tokens 🔥</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tokenomics -->
+    <section id="tokenomics" class="section">
+        <div class="container">
+            <h2 class="section-title">Tokenomics</h2>
+            
+            <div class="token-info">
+                <div class="token-card main-card">
+                    <div class="token-logo">🔥</div>
+                    <h3>$BurnLoop</h3>
+                    <div class="token-address">
+                        <code>968zAsb2uRZhZAqpAJAt3khAEuK2KfZFMo9cAqKjpump</code>
+                        <button onclick="copyAddress()" class="copy-btn">📋</button>
+                    </div>
+                </div>
+                
+                <div class="token-details">
+                    <div class="detail">
+                        <span class="label">Total Supply</span>
+                        <span class="value">1,000,000,000</span>
+                    </div>
+                    <div class="detail">
+                        <span class="label">Decimals</span>
+                        <span class="value">6</span>
+                    </div>
+                    <div class="detail">
+                        <span class="label">Network</span>
+                        <span class="value">Solana</span>
+                    </div>
+                    <div class="detail">
+                        <span class="label">DEX</span>
+                        <span class="value">PumpSwap</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Roadmap -->
+    <section id="roadmap" class="section section-dark">
+        <div class="container">
+            <h2 class="section-title">Roadmap</h2>
+            
+            <div class="roadmap">
+                <div class="roadmap-item completed">
+                    <div class="roadmap-marker">✅</div>
+                    <div class="roadmap-content">
+                        <h4>Phase 1: Launch</h4>
+                        <ul>
+                            <li>Token launch on Pump.fun</li>
+                            <li>Migration to PumpSwap</li>
+                            <li>Community building</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="roadmap-item active">
+                    <div class="roadmap-marker">🔥</div>
+                    <div class="roadmap-content">
+                        <h4>Phase 2: Perps Exchange</h4>
+                        <ul>
+                            <li>Deploy Percolator contracts</li>
+                            <li>Launch perpetuals trading</li>
+                            <li>Activate soft burn mechanism</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="roadmap-item">
+                    <div class="roadmap-marker">🚀</div>
+                    <div class="roadmap-content">
+                        <h4>Phase 3: Expansion</h4>
+                        <ul>
+                            <li>CEX listings</li>
+                            <li>Advanced trading features</li>
+                            <li>Renounce admin (full decentralization)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="section cta-section">
+        <div class="container">
+            <h2>Ready to Join the <span class="gradient-text">Burn Loop</span>?</h2>
+            <p>Every trade you make contributes to the burn. Be part of the deflationary revolution.</p>
+            <div class="cta-buttons">
+                <a href="https://pump.fun/coin/968zAsb2uRZhZAqpAJAt3khAEuK2KfZFMo9cAqKjpump" target="_blank" class="btn btn-large btn-primary">
+                    🔥 Buy $BurnLoop
+                </a>
+                <a href="https://github.com/Sugusdaddy/burnloop" target="_blank" class="btn btn-large btn-secondary">
+                    💻 View Code
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <span class="logo-icon">🔥</span>
+                    <span class="logo-text">BurnLoop</span>
+                </div>
+                <div class="footer-links">
+                    <a href="https://pump.fun/coin/968zAsb2uRZhZAqpAJAt3khAEuK2KfZFMo9cAqKjpump" target="_blank">Pump.fun</a>
+                    <a href="https://dexscreener.com/solana/AhJFcrmvk5thQvyCQut6YrPQDpvAXRo4oZUkH6y46nyv" target="_blank">DexScreener</a>
+                    <a href="https://github.com/Sugusdaddy/burnloop" target="_blank">GitHub</a>
+                    <a href="https://solscan.io/token/968zAsb2uRZhZAqpAJAt3khAEuK2KfZFMo9cAqKjpump" target="_blank">Solscan</a>
+                </div>
+            </div>
+            <div class="footer-disclaimer">
+                <p>⚠️ This is experimental software. Trading perpetuals involves significant risk. Not financial advice. DYOR.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
