@@ -5,579 +5,1023 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BurnLoop | Deflationary Perpetuals Exchange</title>
     <meta name="description" content="The first deflationary perpetuals DEX on Solana. Trade with leverage, burn supply forever.">
-    <meta property="og:title" content="BurnLoop - Deflationary Perpetuals">
-    <meta property="og:description" content="Trade perpetuals. Burn supply. Every trade counts.">
-    <meta property="og:image" content="https://burnloop.io/og-image.png">
-    <meta name="twitter:card" content="summary_large_image">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔥</text></svg>">
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary: #ff5722;
+            --primary-glow: rgba(255, 87, 34, 0.4);
+            --green: #00d26a;
+            --red: #ff4757;
+            --bg: #0a0a0f;
+            --bg-card: #111118;
+            --bg-input: #1a1a22;
+            --border: #2a2a35;
+            --text: #ffffff;
+            --text-dim: #888899;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+        }
+        
+        /* NAV */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 16px 24px;
+            background: rgba(10, 10, 15, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.4rem;
+            font-weight: 800;
+            text-decoration: none;
+            color: var(--text);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 32px;
+        }
+        
+        .nav-links a {
+            color: var(--text-dim);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        
+        .nav-links a:hover { color: var(--text); }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            box-shadow: 0 0 30px var(--primary-glow);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+        
+        /* HERO */
+        .hero {
+            padding: 140px 24px 80px;
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        .hero-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            background: rgba(255, 87, 34, 0.15);
+            border: 1px solid rgba(255, 87, 34, 0.3);
+            border-radius: 50px;
+            font-size: 0.85rem;
+            color: var(--primary);
+            margin-bottom: 24px;
+        }
+        
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #ff5722, #ffab00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-dim);
+            max-width: 600px;
+            margin: 0 auto 40px;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        /* STATS BAR */
+        .stats-bar {
+            display: flex;
+            justify-content: center;
+            gap: 48px;
+            padding: 24px;
+            margin: 40px auto;
+            max-width: 800px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            flex-wrap: wrap;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            font-family: monospace;
+        }
+        
+        .stat-value.green { color: var(--green); }
+        .stat-value.orange { color: var(--primary); }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            margin-top: 4px;
+        }
+        
+        /* TRADING DEMO */
+        .demo-section {
+            padding: 80px 24px;
+            background: linear-gradient(180deg, var(--bg) 0%, #0d0d14 100%);
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 16px;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+        
+        .section-subtitle {
+            text-align: center;
+            color: var(--text-dim);
+            margin-bottom: 48px;
+        }
+        
+        .trading-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 360px;
+            gap: 24px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        
+        /* CHART */
+        .chart-section {
+            padding: 24px;
+        }
+        
+        .chart-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        
+        .pair-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .pair-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+        }
+        
+        .pair-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+        
+        .pair-price {
+            font-family: monospace;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+        
+        .pair-change {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .pair-change.up {
+            background: rgba(0, 210, 106, 0.15);
+            color: var(--green);
+        }
+        
+        .chart-area {
+            height: 350px;
+            background: var(--bg-input);
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #chart-canvas {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .chart-info {
+            display: flex;
+            gap: 32px;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+        
+        .chart-info-item span:first-child {
+            color: var(--text-dim);
+            font-size: 0.85rem;
+        }
+        
+        .chart-info-item span:last-child {
+            display: block;
+            font-weight: 600;
+            font-family: monospace;
+            margin-top: 2px;
+        }
+        
+        /* ORDER PANEL */
+        .order-section {
+            padding: 24px;
+            background: #0e0e15;
+            border-left: 1px solid var(--border);
+        }
+        
+        .order-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+        
+        .order-tab {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: var(--bg-input);
+            color: var(--text-dim);
+        }
+        
+        .order-tab.active.long {
+            background: var(--green);
+            color: #000;
+        }
+        
+        .order-tab.active.short {
+            background: var(--red);
+            color: #fff;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            margin-bottom: 8px;
+        }
+        
+        .input-box {
+            display: flex;
+            align-items: center;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .input-box input {
+            flex: 1;
+            padding: 14px;
+            background: transparent;
+            border: none;
+            color: var(--text);
+            font-size: 1.1rem;
+            font-family: monospace;
+            outline: none;
+        }
+        
+        .input-box .suffix {
+            padding: 0 14px;
+            color: var(--text-dim);
+            font-weight: 500;
+        }
+        
+        .leverage-control {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .leverage-control input[type="range"] {
+            flex: 1;
+            -webkit-appearance: none;
+            height: 6px;
+            background: var(--border);
+            border-radius: 3px;
+            outline: none;
+        }
+        
+        .leverage-control input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--primary);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        
+        .leverage-value {
+            min-width: 50px;
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary);
+            font-family: monospace;
+        }
+        
+        .leverage-btns {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        
+        .leverage-btns button {
+            flex: 1;
+            padding: 10px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-dim);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .leverage-btns button:hover,
+        .leverage-btns button.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: #fff;
+        }
+        
+        .order-summary {
+            background: var(--bg-input);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 0.9rem;
+        }
+        
+        .summary-row:not(:last-child) {
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .summary-row span:first-child {
+            color: var(--text-dim);
+        }
+        
+        .summary-row .burn {
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        .order-btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .order-btn.long {
+            background: var(--green);
+            color: #000;
+        }
+        
+        .order-btn.short {
+            background: var(--red);
+            color: #fff;
+        }
+        
+        .order-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .demo-badge {
+            text-align: center;
+            margin-top: 16px;
+            padding: 10px;
+            background: rgba(255, 87, 34, 0.1);
+            border-radius: 8px;
+            font-size: 0.85rem;
+            color: var(--primary);
+        }
+        
+        /* HOW IT WORKS */
+        .how-section {
+            padding: 100px 24px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            margin-top: 48px;
+        }
+        
+        .step {
+            text-align: center;
+            padding: 32px 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            transition: all 0.3s;
+        }
+        
+        .step:hover {
+            border-color: var(--primary);
+            transform: translateY(-8px);
+        }
+        
+        .step-icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
+        }
+        
+        .step h3 {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+        
+        .step p {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+        }
+        
+        /* TOKEN */
+        .token-section {
+            padding: 100px 24px;
+            background: var(--bg-card);
+        }
+        
+        .token-card {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        .token-icon {
+            font-size: 5rem;
+            margin-bottom: 24px;
+        }
+        
+        .token-card h2 {
+            font-size: 2.5rem;
+            margin-bottom: 16px;
+        }
+        
+        .token-card > p {
+            color: var(--text-dim);
+            margin-bottom: 32px;
+        }
+        
+        .token-address {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 24px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 32px;
+        }
+        
+        .token-address code {
+            font-family: monospace;
+            font-size: 0.85rem;
+            color: var(--text-dim);
+        }
+        
+        .token-address button {
+            padding: 8px 12px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text);
+            cursor: pointer;
+        }
+        
+        .token-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        /* FOOTER */
+        footer {
+            padding: 60px 24px;
+            border-top: 1px solid var(--border);
+            text-align: center;
+        }
+        
+        footer p {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            margin-bottom: 16px;
+        }
+        
+        footer .links {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+        }
+        
+        footer a {
+            color: var(--text-dim);
+            text-decoration: none;
+        }
+        
+        footer a:hover {
+            color: var(--primary);
+        }
+        
+        /* RESPONSIVE */
+        @media (max-width: 900px) {
+            .trading-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .order-section {
+                border-left: none;
+                border-top: 1px solid var(--border);
+            }
+            
+            .steps {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .nav-links {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+            
+            .steps {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-bar {
+                gap: 24px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <!-- Gradient Mesh Background -->
-    <div class="gradient-bg">
-        <div class="gradient-sphere sphere-1"></div>
-        <div class="gradient-sphere sphere-2"></div>
-        <div class="gradient-sphere sphere-3"></div>
-    </div>
-
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <a href="#" class="logo">
-                <div class="logo-mark">
-                    <span class="logo-flame">🔥</span>
-                </div>
-                <span class="logo-text">BurnLoop</span>
-                <span class="logo-badge">BETA</span>
-            </a>
-            <div class="nav-links">
-                <a href="#demo">Demo</a>
-                <a href="#mechanism">Mechanism</a>
-                <a href="#stats">Stats</a>
-                <a href="https://github.com/Sugusdaddy/burnloop" target="_blank">Docs</a>
-            </div>
-            <div class="nav-actions">
-                <a href="https://dexscreener.com/solana/AhJFcrmvk5thQvyCQut6YrPQDpvAXRo4oZUkH6y46nyv" target="_blank" class="btn btn-ghost">
-                    <span class="pulse-dot"></span>
-                    Live Chart
-                </a>
-                <a href="https://pump.fun/coin/968zAsb2uRZhZAqpAJAt3khAEuK2KfZFMo9cAqKjpump" target="_blank" class="btn btn-primary">
-                    Buy $BURN
-                </a>
-            </div>
+    <nav>
+        <a href="#" class="logo">🔥 BurnLoop</a>
+        <div class="nav-links">
+            <a href="#demo">Demo</a>
+            <a href="#how">How It Works</a>
+            <a href="#token">Token</a>
+            <a href="https://github.com/Sugusdaddy/burnloop" target="_blank">GitHub</a>
         </div>
+        <a href="https://pump.fun/coin/968zAsb2uRZhZAqpAJAt3khAEuK2KfZFMo9cAqKjpump" target="_blank" class="btn btn-primary">Buy $BURN</a>
     </nav>
 
-    <!-- Hero Section -->
     <section class="hero">
-        <div class="hero-content">
-            <div class="hero-badge">
-                <span class="badge-dot"></span>
-                Powered by Solana
-            </div>
-            <h1>
-                <span class="hero-line">Trade Perpetuals.</span>
-                <span class="hero-line gradient-text">Burn Supply.</span>
-                <span class="hero-line">Forever.</span>
-            </h1>
-            <p class="hero-desc">
-                The first deflationary perpetuals exchange. Every trade permanently locks tokens in the insurance fund — creating constant buy pressure through reduced supply.
-            </p>
-            <div class="hero-cta">
-                <a href="#demo" class="btn btn-large btn-primary">
-                    <span>Launch Demo</span>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M5 12h14M12 5l7 7-7 7"/>
-                    </svg>
-                </a>
-                <a href="https://github.com/Sugusdaddy/burnloop" target="_blank" class="btn btn-large btn-secondary">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
-                    </svg>
-                    View Source
-                </a>
-            </div>
+        <div class="hero-badge">🔥 Built on Solana</div>
+        <h1>Trade Perpetuals.<br><span class="gradient-text">Burn Supply Forever.</span></h1>
+        <p>The first deflationary perpetuals exchange. Every trade permanently locks tokens — creating constant buy pressure.</p>
+        <div class="hero-buttons">
+            <a href="#demo" class="btn btn-primary">🚀 Try Demo</a>
+            <a href="https://dexscreener.com/solana/AhJFcrmvk5thQvyCQut6YrPQDpvAXRo4oZUkH6y46nyv" target="_blank" class="btn btn-outline">📊 View Chart</a>
         </div>
         
-        <!-- Live Stats Ticker -->
-        <div class="stats-ticker">
-            <div class="ticker-item">
-                <span class="ticker-label">Price</span>
-                <span class="ticker-value" id="live-price">$0.00005</span>
-                <span class="ticker-change positive" id="price-change">+12.5%</span>
+        <div class="stats-bar">
+            <div class="stat">
+                <div class="stat-value" id="price">$0.00005</div>
+                <div class="stat-label">Price</div>
             </div>
-            <div class="ticker-divider"></div>
-            <div class="ticker-item">
-                <span class="ticker-label">24h Volume</span>
-                <span class="ticker-value" id="live-volume">$34,000</span>
+            <div class="stat">
+                <div class="stat-value green" id="change">+41%</div>
+                <div class="stat-label">24h Change</div>
             </div>
-            <div class="ticker-divider"></div>
-            <div class="ticker-item">
-                <span class="ticker-label">Liquidity</span>
-                <span class="ticker-value" id="live-liquidity">$18,000</span>
+            <div class="stat">
+                <div class="stat-value" id="volume">$34K</div>
+                <div class="stat-label">24h Volume</div>
             </div>
-            <div class="ticker-divider"></div>
-            <div class="ticker-item">
-                <span class="ticker-label">Total Burned</span>
-                <span class="ticker-value burn-value" id="total-burned">0</span>
-                <span class="ticker-suffix">$BURN</span>
+            <div class="stat">
+                <div class="stat-value orange" id="burned">0</div>
+                <div class="stat-label">Tokens Burned 🔥</div>
             </div>
         </div>
     </section>
 
-    <!-- Trading Demo Section -->
-    <section id="demo" class="section demo-section">
-        <div class="container">
-            <div class="section-header">
-                <span class="section-tag">DEMO</span>
-                <h2>Experience the Exchange</h2>
-                <p>Preview the perpetuals trading interface. Real trading coming soon.</p>
-            </div>
-            
-            <div class="trading-interface">
-                <!-- Chart Area -->
-                <div class="chart-panel">
-                    <div class="chart-header">
-                        <div class="pair-selector">
-                            <span class="pair-icon">🔥</span>
-                            <span class="pair-name">BURN/USD</span>
-                            <span class="pair-type">PERP</span>
-                        </div>
-                        <div class="chart-price">
-                            <span class="current-price" id="chart-price">$0.00005198</span>
-                            <span class="price-change positive">+41.16%</span>
-                        </div>
-                        <div class="chart-timeframes">
-                            <button class="tf-btn">1m</button>
-                            <button class="tf-btn">5m</button>
-                            <button class="tf-btn active">15m</button>
-                            <button class="tf-btn">1H</button>
-                            <button class="tf-btn">4H</button>
+    <section id="demo" class="demo-section">
+        <h2 class="section-title">Trading Demo</h2>
+        <p class="section-subtitle">Experience the perpetuals interface. Real trading coming soon.</p>
+        
+        <div class="trading-container">
+            <div class="chart-section">
+                <div class="chart-header">
+                    <div class="pair-info">
+                        <div class="pair-icon">🔥</div>
+                        <div>
+                            <div class="pair-name">BURN-PERP</div>
+                            <div style="font-size: 0.8rem; color: var(--text-dim);">Perpetual</div>
                         </div>
                     </div>
-                    <div class="chart-area">
-                        <canvas id="price-chart"></canvas>
-                        <div class="chart-overlay">
-                            <div class="chart-watermark">DEMO MODE</div>
-                        </div>
-                    </div>
-                    <div class="chart-stats">
-                        <div class="stat-item">
-                            <span class="stat-label">24h High</span>
-                            <span class="stat-value">$0.00006241</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">24h Low</span>
-                            <span class="stat-value">$0.00003102</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">Open Interest</span>
-                            <span class="stat-value">$12,450</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">Funding Rate</span>
-                            <span class="stat-value positive">+0.01%</span>
-                        </div>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span class="pair-price" id="chart-price">$0.00005198</span>
+                        <span class="pair-change up" id="chart-change">+41.16%</span>
                     </div>
                 </div>
                 
-                <!-- Order Panel -->
-                <div class="order-panel">
-                    <div class="order-tabs">
-                        <button class="order-tab active" data-side="long">Long</button>
-                        <button class="order-tab" data-side="short">Short</button>
-                    </div>
-                    
-                    <div class="order-form">
-                        <div class="form-group">
-                            <label>Collateral</label>
-                            <div class="input-with-token">
-                                <input type="number" placeholder="0.00" value="1000" id="collateral-input">
-                                <span class="token-badge">
-                                    <span class="token-icon">🔥</span>
-                                    BURN
-                                </span>
-                            </div>
-                            <span class="input-hint">Balance: 50,000 BURN</span>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label>Leverage</label>
-                            <div class="leverage-selector">
-                                <input type="range" min="1" max="10" value="5" id="leverage-slider">
-                                <div class="leverage-display">
-                                    <span id="leverage-value">5</span>x
-                                </div>
-                            </div>
-                            <div class="leverage-presets">
-                                <button class="preset-btn" data-leverage="2">2x</button>
-                                <button class="preset-btn active" data-leverage="5">5x</button>
-                                <button class="preset-btn" data-leverage="10">10x</button>
-                            </div>
-                        </div>
-                        
-                        <div class="order-summary">
-                            <div class="summary-row">
-                                <span>Position Size</span>
-                                <span id="position-size">5,000 BURN</span>
-                            </div>
-                            <div class="summary-row">
-                                <span>Entry Price</span>
-                                <span>$0.00005198</span>
-                            </div>
-                            <div class="summary-row">
-                                <span>Liquidation Price</span>
-                                <span class="warning" id="liq-price">$0.00004158</span>
-                            </div>
-                            <div class="summary-row highlight">
-                                <span>Trading Fee (burns)</span>
-                                <span class="burn-text">🔥 5 BURN</span>
-                            </div>
-                        </div>
-                        
-                        <button class="btn btn-large btn-long" id="place-order">
-                            Open Long Position
-                        </button>
-                        
-                        <p class="demo-notice">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <path d="M12 16v-4M12 8h.01"></path>
-                            </svg>
-                            Demo mode — Real trading launching soon
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Mechanism Section -->
-    <section id="mechanism" class="section mechanism-section">
-        <div class="container">
-            <div class="section-header">
-                <span class="section-tag">HOW IT WORKS</span>
-                <h2>The Burn Loop Mechanism</h2>
-                <p>A revolutionary approach to sustainable tokenomics</p>
-            </div>
-            
-            <div class="mechanism-visual">
-                <div class="loop-diagram">
-                    <div class="loop-step" data-step="1">
-                        <div class="step-number">01</div>
-                        <div class="step-content">
-                            <h3>Deposit</h3>
-                            <p>Use $BURN as collateral for leveraged trading</p>
-                        </div>
-                        <div class="step-icon">💰</div>
-                    </div>
-                    <div class="loop-arrow">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M5 12h14M12 5l7 7-7 7"/>
-                        </svg>
-                    </div>
-                    <div class="loop-step" data-step="2">
-                        <div class="step-number">02</div>
-                        <div class="step-content">
-                            <h3>Trade</h3>
-                            <p>Go long or short with up to 10x leverage</p>
-                        </div>
-                        <div class="step-icon">📈</div>
-                    </div>
-                    <div class="loop-arrow">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M5 12h14M12 5l7 7-7 7"/>
-                        </svg>
-                    </div>
-                    <div class="loop-step highlight" data-step="3">
-                        <div class="step-number">03</div>
-                        <div class="step-content">
-                            <h3>Burn</h3>
-                            <p>0.1% fee permanently locked in insurance fund</p>
-                        </div>
-                        <div class="step-icon">🔥</div>
-                    </div>
-                    <div class="loop-arrow loop-back">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M5 12h14M12 5l7 7-7 7"/>
-                        </svg>
-                    </div>
+                <div class="chart-area">
+                    <canvas id="chart-canvas"></canvas>
                 </div>
                 
-                <div class="mechanism-features">
-                    <div class="feature-card">
-                        <div class="feature-icon">🔒</div>
-                        <h4>Immutable</h4>
-                        <p>No admin keys. Once deployed, the protocol runs forever without intervention.</p>
+                <div class="chart-info">
+                    <div class="chart-info-item">
+                        <span>24h High</span>
+                        <span>$0.00006241</span>
                     </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">♾️</div>
-                        <h4>Permanent</h4>
-                        <p>Insurance fund tokens are locked forever. They can never be withdrawn.</p>
+                    <div class="chart-info-item">
+                        <span>24h Low</span>
+                        <span>$0.00003102</span>
                     </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">📉</div>
-                        <h4>Deflationary</h4>
-                        <p>More trading = more burn. Constant reduction in circulating supply.</p>
+                    <div class="chart-info-item">
+                        <span>Open Interest</span>
+                        <span>$12,450</span>
                     </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Stats Section -->
-    <section id="stats" class="section stats-section">
-        <div class="container">
-            <div class="section-header">
-                <span class="section-tag">LIVE DATA</span>
-                <h2>Protocol Statistics</h2>
-            </div>
-            
-            <div class="stats-grid">
-                <div class="stat-card large">
-                    <div class="stat-header">
-                        <span class="stat-icon">🔥</span>
-                        <span class="stat-title">Total Burned</span>
-                    </div>
-                    <div class="stat-value-large" id="stat-burned">0</div>
-                    <div class="stat-subtitle">$BURN tokens locked forever</div>
-                    <div class="stat-chart" id="burn-chart"></div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <span class="stat-icon">💧</span>
-                        <span class="stat-title">Liquidity</span>
-                    </div>
-                    <div class="stat-value" id="stat-liquidity">$18,000</div>
-                    <div class="stat-change positive">+15% 24h</div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <span class="stat-icon">📊</span>
-                        <span class="stat-title">24h Volume</span>
-                    </div>
-                    <div class="stat-value" id="stat-volume">$34,000</div>
-                    <div class="stat-change positive">+28% 24h</div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <span class="stat-icon">👥</span>
-                        <span class="stat-title">Holders</span>
-                    </div>
-                    <div class="stat-value" id="stat-holders">247</div>
-                    <div class="stat-change positive">+12 24h</div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <span class="stat-icon">💰</span>
-                        <span class="stat-title">Market Cap</span>
-                    </div>
-                    <div class="stat-value" id="stat-mcap">$52,000</div>
-                    <div class="stat-change positive">+41% 24h</div>
-                </div>
-            </div>
-            
-            <!-- Burn Projection Calculator -->
-            <div class="projection-card">
-                <h3>🔥 Burn Projections</h3>
-                <p class="projection-desc">See how trading volume impacts supply reduction</p>
-                
-                <div class="projection-table">
-                    <div class="projection-header">
-                        <span>Daily Volume</span>
-                        <span>Daily Burn</span>
-                        <span>Monthly Burn</span>
-                        <span>Yearly Impact</span>
-                    </div>
-                    <div class="projection-row">
-                        <span>$50,000</span>
-                        <span class="burn-text">~1M tokens</span>
-                        <span class="burn-text">~30M tokens</span>
-                        <span class="burn-text">3.6% supply</span>
-                    </div>
-                    <div class="projection-row highlight">
-                        <span>$500,000</span>
-                        <span class="burn-text">~10M tokens</span>
-                        <span class="burn-text">~300M tokens</span>
-                        <span class="burn-text">36% supply 🔥</span>
-                    </div>
-                    <div class="projection-row">
-                        <span>$5,000,000</span>
-                        <span class="burn-text">~100M tokens</span>
-                        <span class="burn-text">~3B tokens</span>
-                        <span class="burn-text">360% supply 🚀</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Token Info Section -->
-    <section class="section token-section">
-        <div class="container">
-            <div class="token-card-main">
-                <div class="token-visual">
-                    <div class="token-3d">
-                        <div class="token-face">🔥</div>
-                    </div>
-                </div>
-                <div class="token-info">
-                    <h2>$BURN Token</h2>
-                    <p>The native token of BurnLoop exchange. Used as collateral for trading and permanently burned through fees.</p>
-                    
-                    <div class="token-address-box">
-                        <span class="address-label">Contract Address</span>
-                        <div class="address-row">
-                            <code id="token-address">968zAsb2uRZhZAqpAJAt3khAEuK2KfZFMo9cAqKjpump</code>
-                            <button class="copy-btn" onclick="copyAddress()">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="token-details-grid">
-                        <div class="detail-item">
-                            <span class="detail-label">Network</span>
-                            <span class="detail-value">Solana</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Total Supply</span>
-                            <span class="detail-value">1,000,000,000</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Decimals</span>
-                            <span class="detail-value">6</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">DEX</span>
-                            <span class="detail-value">PumpSwap</span>
-                        </div>
-                    </div>
-                    
-                    <div class="token-actions">
-                        <a href="https://pump.fun/coin/968zAsb2uRZhZAqpAJAt3khAEuK2KfZFMo9cAqKjpump" target="_blank" class="btn btn-primary">
-                            Buy on Pump.fun
-                        </a>
-                        <a href="https://dexscreener.com/solana/AhJFcrmvk5thQvyCQut6YrPQDpvAXRo4oZUkH6y46nyv" target="_blank" class="btn btn-ghost">
-                            DexScreener
-                        </a>
-                        <a href="https://solscan.io/token/968zAsb2uRZhZAqpAJAt3khAEuK2KfZFMo9cAqKjpump" target="_blank" class="btn btn-ghost">
-                            Solscan
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Roadmap -->
-    <section class="section roadmap-section">
-        <div class="container">
-            <div class="section-header">
-                <span class="section-tag">ROADMAP</span>
-                <h2>Development Timeline</h2>
-            </div>
-            
-            <div class="timeline">
-                <div class="timeline-item completed">
-                    <div class="timeline-marker">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                            <polyline points="20 6 9 17 4 12"></polyline>
-                        </svg>
-                    </div>
-                    <div class="timeline-content">
-                        <span class="timeline-phase">Phase 1</span>
-                        <h4>Token Launch</h4>
-                        <ul>
-                            <li>Token deployed on Pump.fun</li>
-                            <li>Migration to PumpSwap AMM</li>
-                            <li>Initial community building</li>
-                        </ul>
-                    </div>
-                </div>
-                
-                <div class="timeline-item active">
-                    <div class="timeline-marker pulse">
-                        <span>2</span>
-                    </div>
-                    <div class="timeline-content">
-                        <span class="timeline-phase">Phase 2 — Current</span>
-                        <h4>Exchange Development</h4>
-                        <ul>
-                            <li>Deploy Percolator contracts to mainnet</li>
-                            <li>Launch perpetuals trading</li>
-                            <li>Activate burn mechanism</li>
-                            <li>Keeper bot infrastructure</li>
-                        </ul>
-                    </div>
-                </div>
-                
-                <div class="timeline-item">
-                    <div class="timeline-marker">
-                        <span>3</span>
-                    </div>
-                    <div class="timeline-content">
-                        <span class="timeline-phase">Phase 3</span>
-                        <h4>Ecosystem Growth</h4>
-                        <ul>
-                            <li>Advanced trading features</li>
-                            <li>Multiple trading pairs</li>
-                            <li>Governance implementation</li>
-                            <li>Admin renouncement (full decentralization)</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- CTA Section -->
-    <section class="section cta-section">
-        <div class="container">
-            <div class="cta-content">
-                <h2>Ready to <span class="gradient-text">Burn</span>?</h2>
-                <p>Join the deflationary revolution. Every trade contributes to the burn.</p>
-                <div class="cta-buttons">
-                    <a href="https://pump.fun/coin/968zAsb2uRZhZAqpAJAt3khAEuK2KfZFMo9cAqKjpump" target="_blank" class="btn btn-large btn-primary">
-                        🔥 Buy $BURN
-                    </a>
-                    <a href="https://github.com/Sugusdaddy/burnloop" target="_blank" class="btn btn-large btn-secondary">
-                        Read Documentation
-                    </a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-main">
-                <div class="footer-brand">
-                    <a href="#" class="logo">
-                        <span class="logo-flame">🔥</span>
-                        <span class="logo-text">BurnLoop</span>
-                    </a>
-                    <p>The first deflationary perpetuals exchange on Solana.</p>
-                </div>
-                
-                <div class="footer-links-grid">
-                    <div class="footer-col">
-                        <h5>Product</h5>
-                        <a href="#demo">Trading Demo</a>
-                        <a href="#mechanism">How It Works</a>
-                        <a href="#stats">Statistics</a>
-                    </div>
-                    <div class="footer-col">
-                        <h5>Resources</h5>
-                        <a href="https://github.com/Sugusdaddy/burnloop" target="_blank">GitHub</a>
-                        <a href="https://github.com/Sugusdaddy/burnloop/blob/main/docs/ARCHITECTURE.md" target="_blank">Documentation</a>
-                        <a href="https://github.com/aeyakovenko/percolator-prog" target="_blank">Percolator</a>
-                    </div>
-                    <div class="footer-col">
-                        <h5>Token</h5>
-                        <a href="https://pump.fun/coin/968zAsb2uRZhZAqpAJAt3khAEuK2KfZFMo9cAqKjpump" target="_blank">Pump.fun</a>
-                        <a href="https://dexscreener.com/solana/AhJFcrmvk5thQvyCQut6YrPQDpvAXRo4oZUkH6y46nyv" target="_blank">DexScreener</a>
-                        <a href="https://solscan.io/token/968zAsb2uRZhZAqpAJAt3khAEuK2KfZFMo9cAqKjpump" target="_blank">Solscan</a>
+                    <div class="chart-info-item">
+                        <span>Funding</span>
+                        <span style="color: var(--green)">+0.01%</span>
                     </div>
                 </div>
             </div>
             
-            <div class="footer-bottom">
-                <p>⚠️ This is experimental software. Trading involves significant risk of loss. Not financial advice.</p>
-                <p class="copyright">© 2026 BurnLoop. Built on Solana.</p>
+            <div class="order-section">
+                <div class="order-tabs">
+                    <button class="order-tab active long" onclick="setOrderSide('long')">Long</button>
+                    <button class="order-tab short" onclick="setOrderSide('short')">Short</button>
+                </div>
+                
+                <div class="form-group">
+                    <label>Collateral Amount</label>
+                    <div class="input-box">
+                        <input type="number" id="collateral" value="1000" oninput="updateOrder()">
+                        <span class="suffix">🔥 BURN</span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Leverage</label>
+                    <div class="leverage-control">
+                        <input type="range" id="leverage" min="1" max="10" value="5" oninput="updateOrder()">
+                        <div class="leverage-value"><span id="lev-display">5</span>x</div>
+                    </div>
+                    <div class="leverage-btns">
+                        <button onclick="setLeverage(2)">2x</button>
+                        <button onclick="setLeverage(5)" class="active">5x</button>
+                        <button onclick="setLeverage(10)">10x</button>
+                    </div>
+                </div>
+                
+                <div class="order-summary">
+                    <div class="summary-row">
+                        <span>Position Size</span>
+                        <span id="position-size">5,000 BURN</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Entry Price</span>
+                        <span>$0.00005198</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Liq. Price</span>
+                        <span id="liq-price" style="color: #ffab00">$0.00004158</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Fee (burned 🔥)</span>
+                        <span class="burn" id="fee">5 BURN</span>
+                    </div>
+                </div>
+                
+                <button class="order-btn long" id="order-btn" onclick="placeOrder()">
+                    Open Long Position
+                </button>
+                
+                <div class="demo-badge">
+                    ⚠️ Demo Mode — Real trading launching soon
+                </div>
             </div>
+        </div>
+    </section>
+
+    <section id="how" class="how-section">
+        <h2 class="section-title">How It Works</h2>
+        <p class="section-subtitle">The deflationary perpetuals mechanism</p>
+        
+        <div class="steps">
+            <div class="step">
+                <div class="step-icon">💰</div>
+                <h3>Deposit</h3>
+                <p>Use $BURN as collateral for leveraged trading</p>
+            </div>
+            <div class="step">
+                <div class="step-icon">📈</div>
+                <h3>Trade</h3>
+                <p>Go long or short with up to 10x leverage</p>
+            </div>
+            <div class="step">
+                <div class="step-icon">🔥</div>
+                <h3>Burn</h3>
+                <p>0.1% fee locked in insurance fund forever</p>
+            </div>
+            <div class="step">
+                <div class="step-icon">♾️</div>
+                <h3>Loop</h3>
+                <p>More trading = less supply = moon</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="token" class="token-section">
+        <div class="token-card">
+            <div class="token-icon">🔥</div>
+            <h2>$BURN Token</h2>
+            <p>The native token of BurnLoop. Used as collateral and permanently burned through trading fees.</p>
+            
+            <div class="token-address">
+                <code id="address">968zAsb2uRZhZAqpAJAt3khAEuK2KfZFMo9cAqKjpump</code>
+                <button onclick="copyAddress()">📋 Copy</button>
+            </div>
+            
+            <div class="token-buttons">
+                <a href="https://pump.fun/coin/968zAsb2uRZhZAqpAJAt3khAEuK2KfZFMo9cAqKjpump" target="_blank" class="btn btn-primary">Buy on Pump.fun</a>
+                <a href="https://dexscreener.com/solana/AhJFcrmvk5thQvyCQut6YrPQDpvAXRo4oZUkH6y46nyv" target="_blank" class="btn btn-outline">DexScreener</a>
+                <a href="https://solscan.io/token/968zAsb2uRZhZAqpAJAt3khAEuK2KfZFMo9cAqKjpump" target="_blank" class="btn btn-outline">Solscan</a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>⚠️ Experimental software. Trading involves risk. Not financial advice.</p>
+        <div class="links">
+            <a href="https://github.com/Sugusdaddy/burnloop" target="_blank">GitHub</a>
+            <a href="https://pump.fun/coin/968zAsb2uRZhZAqpAJAt3khAEuK2KfZFMo9cAqKjpump" target="_blank">Pump.fun</a>
+            <a href="https://dexscreener.com/solana/AhJFcrmvk5thQvyCQut6YrPQDpvAXRo4oZUkH6y46nyv" target="_blank">Chart</a>
         </div>
     </footer>
 
-    <script src="script.js"></script>
+    <script>
+        // State
+        let orderSide = 'long';
+        let burnCount = 0;
+        
+        // Fetch live data
+        async function fetchData() {
+            try {
+                const res = await fetch('https://api.dexscreener.com/latest/dex/pairs/solana/AhJFcrmvk5thQvyCQut6YrPQDpvAXRo4oZUkH6y46nyv');
+                const data = await res.json();
+                if (data.pair) {
+                    document.getElementById('price').textContent = '$' + parseFloat(data.pair.priceUsd).toFixed(8);
+                    document.getElementById('chart-price').textContent = '$' + parseFloat(data.pair.priceUsd).toFixed(8);
+                    
+                    const change = data.pair.priceChange?.h24 || 0;
+                    document.getElementById('change').textContent = (change >= 0 ? '+' : '') + change.toFixed(1) + '%';
+                    document.getElementById('chart-change').textContent = (change >= 0 ? '+' : '') + change.toFixed(2) + '%';
+                    
+                    const vol = data.pair.volume?.h24 || 0;
+                    document.getElementById('volume').textContent = '$' + (vol >= 1000 ? (vol/1000).toFixed(1) + 'K' : vol.toFixed(0));
+                }
+            } catch(e) {
+                console.log('API error:', e);
+            }
+        }
+        
+        // Order functions
+        function setOrderSide(side) {
+            orderSide = side;
+            document.querySelectorAll('.order-tab').forEach(t => {
+                t.classList.remove('active');
+                if (t.textContent.toLowerCase() === side) t.classList.add('active');
+            });
+            
+            const btn = document.getElementById('order-btn');
+            btn.className = 'order-btn ' + side;
+            btn.textContent = 'Open ' + (side === 'long' ? 'Long' : 'Short') + ' Position';
+        }
+        
+        function setLeverage(lev) {
+            document.getElementById('leverage').value = lev;
+            document.querySelectorAll('.leverage-btns button').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            updateOrder();
+        }
+        
+        function updateOrder() {
+            const collateral = parseFloat(document.getElementById('collateral').value) || 0;
+            const leverage = parseInt(document.getElementById('leverage').value) || 1;
+            
+            document.getElementById('lev-display').textContent = leverage;
+            
+            const posSize = collateral * leverage;
+            document.getElementById('position-size').textContent = posSize.toLocaleString() + ' BURN';
+            
+            const liqPrice = 0.00005198 * (1 - (1/leverage) * 0.8);
+            document.getElementById('liq-price').textContent = '$' + liqPrice.toFixed(8);
+            
+            const fee = Math.floor(posSize * 0.001);
+            document.getElementById('fee').textContent = fee + ' BURN';
+        }
+        
+        function placeOrder() {
+            const btn = document.getElementById('order-btn');
+            btn.textContent = '⏳ Processing...';
+            btn.disabled = true;
+            
+            setTimeout(() => {
+                btn.textContent = '✓ Demo Order Placed!';
+                setTimeout(() => {
+                    btn.textContent = 'Open ' + (orderSide === 'long' ? 'Long' : 'Short') + ' Position';
+                    btn.disabled = false;
+                }, 1500);
+            }, 1000);
+        }
+        
+        function copyAddress() {
+            navigator.clipboard.writeText('968zAsb2uRZhZAqpAJAt3khAEuK2KfZFMo9cAqKjpump');
+            event.target.textContent = '✓ Copied!';
+            setTimeout(() => event.target.textContent = '📋 Copy', 2000);
+        }
+        
+        // Chart
+        function drawChart() {
+            const canvas = document.getElementById('chart-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = canvas.parentElement.offsetWidth;
+            canvas.height = canvas.parentElement.offsetHeight;
+            
+            const w = canvas.width;
+            const h = canvas.height;
+            const pad = 30;
+            
+            // Generate data
+            const points = 60;
+            const data = [];
+            let price = 0.00004;
+            for (let i = 0; i < points; i++) {
+                price += (Math.random() - 0.45) * 0.000002;
+                price = Math.max(0.00003, Math.min(0.00007, price));
+                data.push(price);
+            }
+            
+            const min = Math.min(...data) * 0.95;
+            const max = Math.max(...data) * 1.05;
+            
+            // Clear
+            ctx.clearRect(0, 0, w, h);
+            
+            // Gradient fill
+            const gradient = ctx.createLinearGradient(0, 0, 0, h);
+            gradient.addColorStop(0, 'rgba(255, 87, 34, 0.3)');
+            gradient.addColorStop(1, 'rgba(255, 87, 34, 0)');
+            
+            ctx.beginPath();
+            ctx.moveTo(pad, h - pad);
+            
+            data.forEach((p, i) => {
+                const x = pad + (i / (data.length - 1)) * (w - pad * 2);
+                const y = h - pad - ((p - min) / (max - min)) * (h - pad * 2);
+                ctx.lineTo(x, y);
+            });
+            
+            ctx.lineTo(w - pad, h - pad);
+            ctx.closePath();
+            ctx.fillStyle = gradient;
+            ctx.fill();
+            
+            // Line
+            ctx.beginPath();
+            data.forEach((p, i) => {
+                const x = pad + (i / (data.length - 1)) * (w - pad * 2);
+                const y = h - pad - ((p - min) / (max - min)) * (h - pad * 2);
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            });
+            ctx.strokeStyle = '#ff5722';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // Current price dot
+            const lastX = w - pad;
+            const lastY = h - pad - ((data[data.length-1] - min) / (max - min)) * (h - pad * 2);
+            
+            ctx.beginPath();
+            ctx.arc(lastX, lastY, 6, 0, Math.PI * 2);
+            ctx.fillStyle = '#ff5722';
+            ctx.fill();
+        }
+        
+        // Burn counter
+        function updateBurn() {
+            burnCount += Math.floor(Math.random() * 500) + 100;
+            const display = burnCount >= 1000000 ? (burnCount/1000000).toFixed(2) + 'M' :
+                           burnCount >= 1000 ? (burnCount/1000).toFixed(1) + 'K' : burnCount;
+            document.getElementById('burned').textContent = display;
+        }
+        
+        // Init
+        fetchData();
+        drawChart();
+        updateOrder();
+        
+        setInterval(fetchData, 30000);
+        setInterval(drawChart, 3000);
+        setInterval(updateBurn, 2000);
+        
+        window.addEventListener('resize', drawChart);
+    </script>
 </body>
 </html>
